@@ -1,1 +1,6 @@
 rootProject.name = 'bienew'
+
+include 'common'
+include 'common:snowflake'
+include 'service'
+include 'service:article'
