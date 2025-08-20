@@ -1,15 +1,15 @@
 package bienew.board.article.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "article")
 @Entity
@@ -22,18 +22,20 @@ public class Article {
 
     private String title;
     private String content;
-    private Long writerId;
 
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static Article create(Long articleId, String title, String content, Long writerId, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ArticleTag> articleTags = new ArrayList<>();
+
+    public static Article create(Long articleId, String title, String content) {
         Article article = new Article();
 
         article.articleId = articleId;
         article.title = title;
         article.content = content;
-        article.writerId = writerId;
+
         article.createdAt = LocalDateTime.now();
         article.modifiedAt = article.createdAt;
 
@@ -44,5 +46,12 @@ public class Article {
         this.title = title;
         this.content = content;
         this.modifiedAt = LocalDateTime.now();
+    }
+
+    public void addTag(Tag tag) {
+        ArticleTag articleTag = new ArticleTag(this, tag);
+
+        articleTags.add(articleTag);
+        tag.getArticleTags().add(articleTag);
     }
 }
