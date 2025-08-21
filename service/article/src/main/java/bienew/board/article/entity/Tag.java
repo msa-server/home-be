@@ -19,9 +19,18 @@ public class Tag {
     @Id
     private Long tagId;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String tagName;
 
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArticleTag> articleTags = new ArrayList<>();
+
+    public static Tag create(Long id, String tagName) {
+        Tag tag = new Tag();
+
+        tag.tagId = id;
+        tag.tagName = tagName;
+
+        return tag;
+    }
 }
