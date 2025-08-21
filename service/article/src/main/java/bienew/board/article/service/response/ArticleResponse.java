@@ -1,10 +1,12 @@
 package bienew.board.article.service.response;
 
 import bienew.board.article.entity.Article;
+import bienew.board.article.entity.ArticleTag;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @ToString
@@ -12,6 +14,7 @@ public class ArticleResponse {
     private Long articleId;
     private String title;
     private String content;
+    private List<ArticleTag> articleTags;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
@@ -21,6 +24,7 @@ public class ArticleResponse {
         response.articleId = article.getArticleId();
         response.title = article.getTitle();
         response.content = article.getContent();
+        response.articleTags = article.getArticleTags();
         response.createdAt = article.getCreatedAt();
         response.modifiedAt = article.getModifiedAt();
 

@@ -3,6 +3,7 @@ package bienew.board.article.service;
 
 import bienew.board.article.entity.Article;
 import bienew.board.article.repository.ArticleRepository;
+import bienew.board.article.repository.TagRepository;
 import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
@@ -18,17 +19,25 @@ public class ArticleService {
     private final Snowflake snowflake = new Snowflake();
 
     private final ArticleRepository articleRepository;
+    private final TagRepository tagRepository;
 
     /**
      * 게시글 생성
      */
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
-        Article article =articleRepository.save(
-                Article.create(snowflake.nextId(),
-                        request.getTitle(),
-                        request.getContent())
-        );
+        Article article = Article.create(
+                snowflake.nextId(),
+                request.getTitle(),
+                request.getContent());
+
+        for (Long tagId: request.getTagIds()) {
+            article.addTag(
+                    tagRepository.findById(tagId)
+                            .orElseThrow()
+            );
+        }
+        articleRepository.save(article);
 
         return ArticleResponse.from(article);
     }
