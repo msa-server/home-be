@@ -33,4 +33,8 @@ public class Tag {
 
         return tag;
     }
+
+    public void update(String tagName) {
+        this.tagName = tagName;
+    }
 }
