@@ -1,15 +1,11 @@
 package bienew.board.article.service.request;
 
-
-import lombok.Getter;
-import lombok.ToString;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-@Getter
-@ToString
-public class ArticleCreateRequest {
-    private String title;
-    private String content;
-    private List<Long> tagIds;
-}
+public record ArticleCreateRequest(
+        @NotNull String title,
+        @NotNull String content,
+        @NotNull List<Long> tagIds
+) { }

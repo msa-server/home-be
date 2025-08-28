@@ -1,10 +1,7 @@
 package bienew.board.article.service.request;
 
-import lombok.Getter;
-import lombok.ToString;
+import jakarta.validation.constraints.NotBlank;
 
-@Getter
-@ToString
-public class TagCreateRequest {
-    String tagName;
-}
+public record TagCreateRequest(
+        @NotBlank String tagName
+) { }

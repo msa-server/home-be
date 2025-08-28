@@ -28,10 +28,10 @@ public class ArticleService {
     public ArticleResponse create(ArticleCreateRequest request) {
         Article article = Article.create(
                 snowflake.nextId(),
-                request.getTitle(),
-                request.getContent());
+                request.title(),
+                request.content());
 
-        for (Long tagId: request.getTagIds()) {
+        for (Long tagId: request.tagIds()) {
             article.addTag(
                     tagRepository.findById(tagId)
                             .orElseThrow()

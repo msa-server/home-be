@@ -1,21 +1,12 @@
 package bienew.board.article.service.response;
 
-import lombok.Getter;
-import lombok.ToString;
-
 import java.util.List;
 
-@Getter
-@ToString
-public class ArticlePageResponse {
-    private List<ArticleResponse> articles;
-    private Long articleCount;
-
+public record ArticlePageResponse(
+        List<ArticleResponse> articles,
+        Long articleCount
+) {
     public static ArticlePageResponse of(List<ArticleResponse> data, Long cnt) {
-        ArticlePageResponse response = new ArticlePageResponse();
-        response.articles = data;
-        response.articleCount = cnt;
-
-        return response;
+        return new ArticlePageResponse(data, cnt);
     };
 }
