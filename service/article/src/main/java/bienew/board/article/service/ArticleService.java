@@ -5,6 +5,7 @@ import bienew.board.article.entity.Article;
 import bienew.board.article.repository.ArticleRepository;
 import bienew.board.article.repository.TagRepository;
 import bienew.board.article.service.request.ArticleCreateRequest;
+import bienew.board.article.service.request.ArticleUpdateRequest;
 import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
 import bienew.common.snowflake.Snowflake;
@@ -12,6 +13,8 @@ import bienew.common.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -61,5 +64,17 @@ public class ArticleService {
                         PageLimitCalculator.calculatorPageLimit(page, pageSize, 12L)
                 )
         );
+    }
+
+    @Transactional
+    public ArticleResponse update(Long articleId, ArticleUpdateRequest request) {
+        Article article = articleRepository.findById(articleId).orElseThrow();
+
+        article.update(request.title(), request.content(),
+                request.tagIds().isEmpty()
+                        ? List.of()
+                        : tagRepository.findByTagIdIn(request.tagIds())
+                );
+        return ArticleResponse.from(article);
     }
 }

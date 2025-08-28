@@ -42,10 +42,13 @@ public class Article {
         return article;
     }
 
-    public void update(String title, String content) {
+    public void update(String title, String content, List<Tag> tags) {
         this.title = title;
         this.content = content;
         this.modifiedAt = LocalDateTime.now();
+
+        this.articleTags.clear();
+        tags.forEach(this::addTag);
     }
 
     public void addTag(Tag tag) {

@@ -2,13 +2,12 @@ package bienew.board.article.controller;
 
 
 import bienew.board.article.service.ArticleService;
+import bienew.board.article.service.request.ArticleCreateRequest;
+import bienew.board.article.service.request.ArticleUpdateRequest;
 import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +26,18 @@ public class ArticleController {
             @RequestParam("pageSize") Long pageSize
     ) {
         return articleService.readAll(tagId, page, pageSize);
+    }
+
+    @PostMapping("/v1/articles")
+    public ArticleResponse create(@RequestBody ArticleCreateRequest request) {
+        return articleService.create(request);
+    }
+
+    @PutMapping("/v1/articles/{articleId}")
+    public ArticleResponse update(
+            @PathVariable Long articleId,
+            @RequestBody ArticleUpdateRequest request) {
+        return articleService.update(articleId, request);
     }
 
 }
