@@ -26,6 +26,6 @@ public class TagController {
 
     @PutMapping("/v1/tags/{tagId}")
     public TagResponse update(@PathVariable Long tagId, @RequestBody TagUpdateRequest request) {
-        return tagService.
+        return tagService.update(tagId, request);
     }
 }
