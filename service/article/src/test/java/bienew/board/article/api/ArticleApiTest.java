@@ -2,8 +2,10 @@ package bienew.board.article.api;
 
 import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.request.ArticleUpdateRequest;
+import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
@@ -24,6 +26,26 @@ public class ArticleApiTest {
                 .body(ArticleResponse.class);
 
         System.out.println("response : " + response);
+    }
+
+    @Test
+    void readTest() {
+        ArticleResponse response = restClient.get()
+                .uri("/v1/articles/{articleId}", 84207313704575020L)
+                .retrieve()
+                .body(ArticleResponse.class);
+
+        System.out.println("response = " + response);
+    }
+
+    @Test
+    void readAllTest() {
+        ArticlePageResponse responses = restClient.get()
+                .uri("/v1/articles?tagId=84186626948456448&pageSize=10&page=5000")
+                .retrieve()
+                .body(ArticlePageResponse.class);
+
+        responses.articles().stream().forEach(System.out::println);
     }
 
     @Test
