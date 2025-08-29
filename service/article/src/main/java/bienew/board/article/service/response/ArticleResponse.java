@@ -10,17 +10,17 @@ public record ArticleResponse(
         Long articleId,
         String title,
         String content,
-        List<ArticleTag> articleTags,
+        List<TagResponse> articleTags,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt
 ) {
 
-    public static ArticleResponse from(Article article) {
+    public static ArticleResponse from(Article article, List<TagResponse> tags) {
         return new ArticleResponse(
                 article.getArticleId(),
                 article.getTitle(),
                 article.getContent(),
-                article.getArticleTags(),
+                tags,
                 article.getCreatedAt(),
                 article.getModifiedAt()
         );

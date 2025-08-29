@@ -12,7 +12,6 @@ import java.util.List;
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query(
             value = "select article.article_id, article.title, article.content," +
-                    " article.writer_id," +
                     " article.created_at, article.modified_at " +
                     "from (" +
                     "   select article_id from article_tag" +

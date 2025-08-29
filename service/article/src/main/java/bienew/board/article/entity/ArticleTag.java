@@ -1,15 +1,16 @@
 package bienew.board.article.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @Entity
 @Table(
         name = "article_tag",
         uniqueConstraints = @UniqueConstraint(columnNames = {"article_id", "tag_id"})
 )
+@Getter
 @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArticleTag {
     @Id
     @GeneratedValue

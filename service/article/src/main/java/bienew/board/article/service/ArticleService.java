@@ -8,6 +8,7 @@ import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.request.ArticleUpdateRequest;
 import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
+import bienew.board.article.service.response.TagResponse;
 import bienew.common.snowflake.Snowflake;
 
 import lombok.RequiredArgsConstructor;
@@ -42,23 +43,34 @@ public class ArticleService {
         }
         articleRepository.save(article);
 
-        return ArticleResponse.from(article);
+        return ArticleResponse.from(article, article.getArticleTags().stream()
+                .map(at -> TagResponse.from(at.getTag())).toList());
     }
 
     /**
      * 해당 게시글 상세 조회
      */
+    @Transactional
     public ArticleResponse read(Long articleId) {
-        return ArticleResponse.from(articleRepository.findById(articleId).orElseThrow());
+        Article article = articleRepository.findById(articleId).orElseThrow();
+
+        return ArticleResponse.from(article, article.getArticleTags().stream()
+                .map(at -> TagResponse.from(at.getTag())).toList());
     }
 
     /**
      * 해당 태그를 포함하는 게시글 조회.
      */
+    @Transactional
     public ArticlePageResponse readAll(Long tagId, Long page, Long pageSize) {
         return ArticlePageResponse.of(
                 articleRepository.findAll(tagId,(page - 1) * pageSize, pageSize).stream()
-                        .map(ArticleResponse::from).toList(),
+                        .map(article -> ArticleResponse.from(
+                                article,
+                                article.getArticleTags().stream()
+                                                .map(at -> TagResponse.from(at.getTag()))
+                                                        .toList()
+                        )).toList(),
                 articleRepository.count(
                         tagId,
                         PageLimitCalculator.calculatorPageLimit(page, pageSize, 12L)
@@ -75,6 +87,7 @@ public class ArticleService {
                         ? List.of()
                         : tagRepository.findByTagIdIn(request.tagIds())
                 );
-        return ArticleResponse.from(article);
+        return ArticleResponse.from(article, article.getArticleTags().stream()
+                .map(at -> TagResponse.from(at.getTag())).toList());
     }
 }
