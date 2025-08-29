@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "service/article"
+      - "main"
 
 jobs:
   build-and-push:
