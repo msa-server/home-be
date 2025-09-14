@@ -16,13 +16,13 @@ public class TagApiTest {
 
     @Test
     void createTest() {
-        TagResponse tagResponse = restClient.post()
-                .uri("/v1/tags")
-                .body(new TagCreateRequest("새로운 태그"))
-                .retrieve()
-                .body(TagResponse.class);
-
-        System.out.println("response : " + tagResponse);
+        for (int i =  7; i < 100; i++) {
+            TagResponse tagResponse = restClient.post()
+                    .uri("/v1/tags")
+                    .body(new TagCreateRequest("test" + i))
+                    .retrieve()
+                    .body(TagResponse.class);
+        }
     }
 
     @Test

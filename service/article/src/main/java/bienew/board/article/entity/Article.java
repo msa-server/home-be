@@ -26,6 +26,7 @@ public class Article {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    // Article에서 ArticleTag의 생명주기를 관리하도록 설정
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArticleTag> articleTags = new ArrayList<>();
 
@@ -42,19 +43,9 @@ public class Article {
         return article;
     }
 
-    public void update(String title, String content, List<Tag> tags) {
+    public void update(String title, String content) {
         this.title = title;
         this.content = content;
         this.modifiedAt = LocalDateTime.now();
-
-        this.articleTags.clear();
-        tags.forEach(this::addTag);
-    }
-
-    public void addTag(Tag tag) {
-        ArticleTag articleTag = new ArticleTag(this, tag);
-
-        articleTags.add(articleTag);
-        tag.getArticleTags().add(articleTag);
     }
 }

@@ -29,6 +29,21 @@ public class ArticleApiTest {
     }
 
     @Test
+    void createManyTest() {
+        for (int i = 0; i < 20000; i++) {
+            restClient.post()
+                    .uri("/v1/articles")
+                    .body(new ArticleCreateRequest(
+                            "test" + i,
+                            "content + i",
+                            List.of(1L)
+                    ))
+                    .retrieve()
+                    .body(ArticleResponse.class);
+        }
+    }
+
+    @Test
     void readTest() {
         ArticleResponse response = restClient.get()
                 .uri("/v1/articles/{articleId}", 84207313704575020L)

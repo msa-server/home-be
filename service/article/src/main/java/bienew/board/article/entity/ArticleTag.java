@@ -24,8 +24,12 @@ public class ArticleTag {
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
-    public ArticleTag(Article article, Tag tag) {
-        this.article = article;
-        this.tag = tag;
+    public static ArticleTag create(Article article, Tag tag) {
+        ArticleTag articleTag = new ArticleTag();
+
+        articleTag.article = article;
+        articleTag.tag = tag;
+
+        return articleTag;
     }
 }

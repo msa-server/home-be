@@ -2,6 +2,8 @@ package bienew.board.article.service;
 
 
 import bienew.board.article.entity.Article;
+import bienew.board.article.entity.ArticleTag;
+import bienew.board.article.entity.Tag;
 import bienew.board.article.repository.ArticleRepository;
 import bienew.board.article.repository.TagRepository;
 import bienew.board.article.service.request.ArticleCreateRequest;
@@ -35,12 +37,8 @@ public class ArticleService {
                 request.title(),
                 request.content());
 
-        for (Long tagId: request.tagIds()) {
-            article.addTag(
-                    tagRepository.findById(tagId)
-                            .orElseThrow()
-            );
-        }
+       addTagsToArticle(article, request.tagIds());
+
         articleRepository.save(article);
 
         return ArticleResponse.from(article, article.getArticleTags().stream()
@@ -82,12 +80,38 @@ public class ArticleService {
     public ArticleResponse update(Long articleId, ArticleUpdateRequest request) {
         Article article = articleRepository.findById(articleId).orElseThrow();
 
-        article.update(request.title(), request.content(),
-                request.tagIds().isEmpty()
-                        ? List.of()
-                        : tagRepository.findByTagIdIn(request.tagIds())
-                );
+        // 1. 기존 태그들의 카운트 감소
+        article.getArticleTags().forEach(at -> {
+            at.getTag().decrease();
+        });
+
+        // 2. 기존 태그 연결 제거
+        article.getArticleTags().clear();
+
+        // 3. 게시글 내용 업데이트
+        article.update(request.title(), request.content());
+
+        // 4. 게시글 새로운 태그 증가.
+        addTagsToArticle(article, request.tagIds());
+
         return ArticleResponse.from(article, article.getArticleTags().stream()
                 .map(at -> TagResponse.from(at.getTag())).toList());
+    }
+
+    /**
+     * 게시글에 대한 태그 추가 및 증가.
+     */
+    private void addTagsToArticle(Article article, List<Long> tags) {
+        if (tags == null || tags.isEmpty()) {
+            return;
+        }
+
+        for (Long tagId: tags) {
+            Tag tag = tagRepository.findById(tagId).orElseThrow();
+
+            tag.increase();
+
+            article.getArticleTags().add(ArticleTag.create(article, tag));
+        }
     }
 }

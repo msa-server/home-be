@@ -22,8 +22,7 @@ public class Tag {
     @Column(unique = true, nullable = false)
     private String tagName;
 
-    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ArticleTag> articleTags = new ArrayList<>();
+    private Long count = 0L;
 
     public static Tag create(Long id, String tagName) {
         Tag tag = new Tag();
@@ -32,6 +31,14 @@ public class Tag {
         tag.tagName = tagName;
 
         return tag;
+    }
+
+    public void increase() {
+        count += 1;
+    }
+
+    public void decrease() {
+        count -= 1;
     }
 
     public void update(String tagName) {
