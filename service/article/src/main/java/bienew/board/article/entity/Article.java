@@ -30,6 +30,10 @@ public class Article {
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArticleTag> articleTags = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "series_id", nullable = false)
+    private Series series;
+
     public static Article create(Long articleId, String title, String content) {
         Article article = new Article();
 
@@ -47,5 +51,21 @@ public class Article {
         this.title = title;
         this.content = content;
         this.modifiedAt = LocalDateTime.now();
+    }
+
+    public void updateSeries(Series series) {
+        if (this.series != null) {
+            this.series = series;
+
+            this.series.getArticles().remove(this);
+            this.series.decreaseCount();
+
+        }
+
+        this.series = series;
+        if (!series.getArticles().contains(this)) {
+            series.addArticle(this);
+            series.increaseCount();
+        }
     }
 }

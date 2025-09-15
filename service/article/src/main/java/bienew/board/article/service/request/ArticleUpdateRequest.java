@@ -7,5 +7,6 @@ import java.util.List;
 public record ArticleUpdateRequest(
         @NotNull String title,
         @NotNull String content,
-        @NotNull List<Long> tagIds
+        @NotNull List<Long> tagIds,
+        @NotNull Long seriesId
 ) { }

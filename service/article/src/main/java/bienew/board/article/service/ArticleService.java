@@ -3,8 +3,10 @@ package bienew.board.article.service;
 
 import bienew.board.article.entity.Article;
 import bienew.board.article.entity.ArticleTag;
+import bienew.board.article.entity.Series;
 import bienew.board.article.entity.Tag;
 import bienew.board.article.repository.ArticleRepository;
+import bienew.board.article.repository.SeriesRepository;
 import bienew.board.article.repository.TagRepository;
 import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.request.ArticleUpdateRequest;
@@ -26,18 +28,27 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final TagRepository tagRepository;
+    private final SeriesRepository seriesRepository;
 
     /**
      * 게시글 생성
      */
     @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
+        // 1. 개체 생성.
         Article article = Article.create(
                 snowflake.nextId(),
                 request.title(),
                 request.content());
 
-       addTagsToArticle(article, request.tagIds());
+        // 2. 태그 추가
+        addTagsToArticle(article, request.tagIds());
+
+        // 3. 시리즈 설정
+        article.updateSeries(
+                seriesRepository.findById(request.seriesId())
+                        .orElseThrow()
+        );
 
         articleRepository.save(article);
 
@@ -62,17 +73,14 @@ public class ArticleService {
     @Transactional
     public ArticlePageResponse readAll(Long tagId, Long page, Long pageSize) {
         return ArticlePageResponse.of(
-                articleRepository.findAll(tagId,(page - 1) * pageSize, pageSize).stream()
+                articleRepository.findAll(tagId, (page - 1) * pageSize, pageSize).stream()
                         .map(article -> ArticleResponse.from(
                                 article,
                                 article.getArticleTags().stream()
-                                                .map(at -> TagResponse.from(at.getTag()))
-                                                        .toList()
+                                        .map(at -> TagResponse.from(at.getTag()))
+                                        .toList()
                         )).toList(),
-                articleRepository.count(
-                        tagId,
-                        PageLimitCalculator.calculatorPageLimit(page, pageSize, 12L)
-                )
+                tagRepository.findById(tagId).orElseThrow().getCount()
         );
     }
 
@@ -94,6 +102,13 @@ public class ArticleService {
         // 4. 게시글 새로운 태그 증가.
         addTagsToArticle(article, request.tagIds());
 
+        // 5. 시리즈 수정
+        Series series = seriesRepository.findById(request.seriesId()).orElseThrow();
+
+        if (series != article.getSeries()) {
+            article.updateSeries(series);
+        }
+
         return ArticleResponse.from(article, article.getArticleTags().stream()
                 .map(at -> TagResponse.from(at.getTag())).toList());
     }
@@ -106,7 +121,7 @@ public class ArticleService {
             return;
         }
 
-        for (Long tagId: tags) {
+        for (Long tagId : tags) {
             Tag tag = tagRepository.findById(tagId).orElseThrow();
 
             tag.increase();
