@@ -2,14 +2,12 @@ package bienew.board.article.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Table(name = "article")
 @Entity
@@ -32,6 +30,7 @@ public class Article {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "series_id", nullable = false)
+    @Setter
     private Series series;
 
     public static Article create(Long articleId, String title, String content) {
@@ -51,21 +50,5 @@ public class Article {
         this.title = title;
         this.content = content;
         this.modifiedAt = LocalDateTime.now();
-    }
-
-    public void updateSeries(Series series) {
-        if (this.series != null) {
-            this.series = series;
-
-            this.series.getArticles().remove(this);
-            this.series.decreaseCount();
-
-        }
-
-        this.series = series;
-        if (!series.getArticles().contains(this)) {
-            series.addArticle(this);
-            series.increaseCount();
-        }
     }
 }

@@ -12,17 +12,19 @@ public record ArticleResponse(
         String content,
         List<TagResponse> articleTags,
         LocalDateTime createdAt,
-        LocalDateTime modifiedAt
+        LocalDateTime modifiedAt,
+        SeriesResponse series
 ) {
 
-    public static ArticleResponse from(Article article, List<TagResponse> tags) {
+    public static ArticleResponse from(Article article, List<TagResponse> tags, SeriesResponse series) {
         return new ArticleResponse(
                 article.getArticleId(),
                 article.getTitle(),
                 article.getContent(),
                 tags,
                 article.getCreatedAt(),
-                article.getModifiedAt()
+                article.getModifiedAt(),
+                series
         );
     }
 }

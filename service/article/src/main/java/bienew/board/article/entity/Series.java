@@ -22,7 +22,7 @@ public class Series {
 
     private Long articleCount;
 
-    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL)
     private List<Article> articles = new ArrayList<>();
 
     public static Series create(Long id, String name) {
@@ -40,10 +40,32 @@ public class Series {
     }
 
     public void addArticle(Article article) {
-        articles.add(article);
-        articleCount += 1;
+        if (article == null) {
+            return;
+        }
+
+        // 이미 해당 시리즈에 존재 하는 경우 패스
+        if (articles.contains(article)) {
+            return;
+        }
+
+        // 이미 다른 시리즈에 있는 경우 빼고 여기에 추가.
+        if (article.getSeries() != null && article.getSeries() != this) {
+            article.getSeries().removeArticle(article);
+        }
+
+        this.articles.add(article);
+        article.setSeries(this);
+        articleCount++;
     }
 
-    public void increaseCount() { this.articleCount += 1; }
-    public void decreaseCount() { this.articleCount -= 1; }
+    public void removeArticle(Article article) {
+        if (article == null) {
+            return;
+        }
+
+        if (articles.remove(article)) {
+            articleCount--;
+        }
+    }
 }

@@ -8,45 +8,46 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ArticleApiTest {
     RestClient restClient = RestClient.create("http://localhost:9000");
 
     @Test
     void createTest() {
-        ArticleResponse response = restClient.post()
-                .uri("/v1/articles")
-                .body(new ArticleCreateRequest(
-                        "test1",
-                        "test2",
-                        List.of()
-                ))
-                .retrieve()
-                .body(ArticleResponse.class);
+        ArticleCreateRequest[] data = {
+                new ArticleCreateRequest(
+                        "hello", "world",
+                        Set.of(93223085430833152L, 93223086101921792L),
+                        93220295450034176L
+                ),
+                new ArticleCreateRequest(
+                        "hello2", "world2",
+                        Set.of(93223086324219904L, 93223086538129408L),
+                        93220296737685504L
+                ),
+        };
 
-        System.out.println("response : " + response);
-    }
+        Arrays.stream(data).forEach(
+                request -> {
+                    ArticleResponse response = restClient.post()
+                            .uri("/v1/articles")
+                            .body(request)
+                            .retrieve()
+                            .body(ArticleResponse.class);
 
-    @Test
-    void createManyTest() {
-        for (int i = 0; i < 20000; i++) {
-            restClient.post()
-                    .uri("/v1/articles")
-                    .body(new ArticleCreateRequest(
-                            "test" + i,
-                            "content + i",
-                            List.of(1L)
-                    ))
-                    .retrieve()
-                    .body(ArticleResponse.class);
-        }
+                    System.out.println("response = " + response);
+                }
+        );
     }
 
     @Test
     void readTest() {
         ArticleResponse response = restClient.get()
-                .uri("/v1/articles/{articleId}", 84207313704575020L)
+                .uri("/v1/articles/{articleId}", 93342858258096128L)
                 .retrieve()
                 .body(ArticleResponse.class);
 
@@ -54,30 +55,60 @@ public class ArticleApiTest {
     }
 
     @Test
-    void readAllTest() {
-        ArticlePageResponse responses = restClient.get()
-                .uri("/v1/articles?tagId=84186626948456448&pageSize=10&page=5000")
-                .retrieve()
-                .body(ArticlePageResponse.class);
-
-        responses.articles().stream().forEach(System.out::println);
-    }
-
-    @Test
-    void updateTest() {
+    void updateBasicTest() {
         ArticleResponse response = restClient.put()
-                .uri("/v1/articles/{articleId}", 86618720791166976L)
+                .uri("/v1/articles/{articleId}", 93342858258096128L)
                 .body(new ArticleUpdateRequest(
-                        "test_update",
-                        "test_update",
-                        List.of(84186626948456448L,
-                                84183869777043456L,
-                                84183869856735232L)
+                        "hello1", "world1",
+                        Set.of(93223085430833152L, 93223086101921792L),
+                        93220295450034176L
                 ))
                 .retrieve()
                 .body(ArticleResponse.class);
 
-        System.out.println("response : " + response);
+        System.out.println("response = " + response);
     }
 
+    @Test
+    void updateArticleTagListTest() {
+        ArticleResponse response = restClient.put()
+                .uri("/v1/articles/{articleId}", 93342858258096128L)
+                .body(new ArticleUpdateRequest(
+                        "hello1", "world1",
+                        Set.of(93223086324219904L, 93223086101921792L),
+                        93220295450034176L
+                ))
+                .retrieve()
+                .body(ArticleResponse.class);
+
+        System.out.println("response = " + response);
+    }
+
+    @Test
+    void updateArticleSeriesTest() {
+        ArticleResponse response = restClient.put()
+                .uri("/v1/articles/{articleId}", 93342858258096128L)
+                .body(new ArticleUpdateRequest(
+                        "hello1", "world1",
+                        Set.of(93223086324219904L, 93223086101921792L),
+                        93220297203253248L
+                ))
+                .retrieve()
+                .body(ArticleResponse.class);
+
+        System.out.println("response = " + response);
+    }
+
+    @Test
+    void readPageTest() {
+        ArticlePageResponse response = restClient.get()
+                .uri("/v1/articles?tagId=93223086324219904&page=1&pageSize=12")
+                .retrieve()
+                .body(ArticlePageResponse.class);
+
+
+        System.out.println("article count = " + response.articleCount());
+        response.articles().forEach(System.out::println);
+
+    }
 }

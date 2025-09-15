@@ -12,6 +12,7 @@ import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.request.ArticleUpdateRequest;
 import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
+import bienew.board.article.service.response.SeriesResponse;
 import bienew.board.article.service.response.TagResponse;
 import bienew.common.snowflake.Snowflake;
 
@@ -19,7 +20,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,19 +46,20 @@ public class ArticleService {
                 request.title(),
                 request.content());
 
+        System.out.println("new article = " + article);
+
         // 2. 태그 추가
         addTagsToArticle(article, request.tagIds());
 
         // 3. 시리즈 설정
-        article.updateSeries(
-                seriesRepository.findById(request.seriesId())
-                        .orElseThrow()
-        );
+        Series series = seriesRepository.findById(request.seriesId())
+                .orElseThrow();
+        series.addArticle(article);
 
-        articleRepository.save(article);
-
-        return ArticleResponse.from(article, article.getArticleTags().stream()
-                .map(at -> TagResponse.from(at.getTag())).toList());
+        return ArticleResponse.from(
+                article,
+                article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
+                SeriesResponse.from(article.getSeries()));
     }
 
     /**
@@ -63,8 +69,10 @@ public class ArticleService {
     public ArticleResponse read(Long articleId) {
         Article article = articleRepository.findById(articleId).orElseThrow();
 
-        return ArticleResponse.from(article, article.getArticleTags().stream()
-                .map(at -> TagResponse.from(at.getTag())).toList());
+        return ArticleResponse.from(
+                article,
+                article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
+                SeriesResponse.from(article.getSeries()));
     }
 
     /**
@@ -76,10 +84,8 @@ public class ArticleService {
                 articleRepository.findAll(tagId, (page - 1) * pageSize, pageSize).stream()
                         .map(article -> ArticleResponse.from(
                                 article,
-                                article.getArticleTags().stream()
-                                        .map(at -> TagResponse.from(at.getTag()))
-                                        .toList()
-                        )).toList(),
+                                article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
+                                SeriesResponse.from(article.getSeries()))).toList(),
                 tagRepository.findById(tagId).orElseThrow().getCount()
         );
     }
@@ -88,35 +94,51 @@ public class ArticleService {
     public ArticleResponse update(Long articleId, ArticleUpdateRequest request) {
         Article article = articleRepository.findById(articleId).orElseThrow();
 
-        // 1. 기존 태그들의 카운트 감소
-        article.getArticleTags().forEach(at -> {
-            at.getTag().decrease();
+        // 1. 태그 리스트 업데이트
+        // 1-1 기존 태그 Id 리스트 추출
+        Set<Long> nowTags = article.getArticleTags().stream()
+                .map(articleTag -> articleTag.getTag().getTagId())
+                .collect(Collectors.toSet());
+
+        // 1-2 새로은 태그 Id 리스트 추출
+        Set<Long> newTags = new HashSet<>(request.tagIds());
+
+        // 1-3 제거된 태그 처리 (기존 O, 신규 X)
+        article.getArticleTags().removeIf(articleTag -> {
+            Tag tag = articleTag.getTag();
+
+            if (!newTags.contains(tag.getTagId())) {
+                tag.decrease();
+                return true;
+            }
+
+            return false;
         });
 
-        // 2. 기존 태그 연결 제거
-        article.getArticleTags().clear();
+        // 1-4 추가할 태그 처리 (기존 X, 신규 O)
+        newTags.removeAll(nowTags);
 
-        // 3. 게시글 내용 업데이트
-        article.update(request.title(), request.content());
-
-        // 4. 게시글 새로운 태그 증가.
-        addTagsToArticle(article, request.tagIds());
-
-        // 5. 시리즈 수정
-        Series series = seriesRepository.findById(request.seriesId()).orElseThrow();
-
-        if (series != article.getSeries()) {
-            article.updateSeries(series);
+        if (!newTags.isEmpty()) {
+            addTagsToArticle(article, newTags);
         }
 
-        return ArticleResponse.from(article, article.getArticleTags().stream()
-                .map(at -> TagResponse.from(at.getTag())).toList());
+        // 2. 게시글 내용 업데이트
+        article.update(request.title(), request.content());
+
+        // 3. 시리즈 수정
+        Series series = seriesRepository.findById(request.seriesId()).orElseThrow();
+        series.addArticle(article);
+
+        return ArticleResponse.from(
+                article,
+                article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
+                SeriesResponse.from(article.getSeries()));
     }
 
     /**
      * 게시글에 대한 태그 추가 및 증가.
      */
-    private void addTagsToArticle(Article article, List<Long> tags) {
+    private void addTagsToArticle(Article article, Set<Long> tags) {
         if (tags == null || tags.isEmpty()) {
             return;
         }
