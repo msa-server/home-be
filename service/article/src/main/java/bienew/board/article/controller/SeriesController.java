@@ -29,7 +29,7 @@ public class SeriesController {
     }
 
     @PutMapping("/v1/series/{seriesId}")
-    public SeriesResponse update(@PathVariable Long tagId, @RequestBody SeriesUpdateRequest request) {
-        return seriesService.update(tagId, request);
+    public SeriesResponse update(@PathVariable Long seriesId, @RequestBody SeriesUpdateRequest request) {
+        return seriesService.update(seriesId, request);
     }
 }
