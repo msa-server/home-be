@@ -9,6 +9,7 @@ import org.junit.jupiter.api.TestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class TagApiTest {
@@ -16,13 +17,19 @@ public class TagApiTest {
 
     @Test
     void createTest() {
-        for (int i =  7; i < 100; i++) {
-            TagResponse tagResponse = restClient.post()
-                    .uri("/v1/tags")
-                    .body(new TagCreateRequest("test" + i))
-                    .retrieve()
-                    .body(TagResponse.class);
-        }
+        String[] data = {"apple", "banana", "cat", "dog"};
+
+        Arrays.stream(data).forEach(
+                tagName -> {
+                    TagResponse tagResponse = restClient.post()
+                            .uri("/v1/tags")
+                            .body(new TagCreateRequest(tagName))
+                            .retrieve()
+                            .body(TagResponse.class);
+
+                    System.out.println("response = " + tagResponse);
+                }
+        );
     }
 
     @Test
@@ -33,16 +40,14 @@ public class TagApiTest {
                 .body(new ParameterizedTypeReference<List<TagResponse>>() {
                 });
 
-        result.stream()
-                .filter(a -> a.tagName().equals("새로운 태그"))
-                .forEach(System.out::println);
+        result.forEach(System.out::println);
     }
 
     @Test
     void updateTest() {
         TagResponse response = restClient.put()
-                .uri("/v1/tags/{tagId}", 86627635492818944L)
-                .body(new TagUpdateRequest("new_name"))
+                .uri("/v1/tags/{tagId}", 93223085430833152L)
+                .body(new TagUpdateRequest("apple_chip"))
                 .retrieve()
                 .body(TagResponse.class);
 
