@@ -1,7 +1,6 @@
 package bienew.board.article.service.response;
 
 import bienew.board.article.entity.Article;
-import bienew.board.article.entity.ArticleTag;
 
 import java.time.LocalDateTime;
 import java.util.List;

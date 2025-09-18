@@ -1,13 +1,9 @@
 package bienew.board.article.controller;
 
 import bienew.board.article.service.SeriesService;
-import bienew.board.article.service.TagService;
 import bienew.board.article.service.request.SeriesCreateRequest;
 import bienew.board.article.service.request.SeriesUpdateRequest;
-import bienew.board.article.service.request.TagCreateRequest;
-import bienew.board.article.service.request.TagUpdateRequest;
 import bienew.board.article.service.response.SeriesResponse;
-import bienew.board.article.service.response.TagResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -5,12 +5,9 @@ import bienew.board.article.service.request.ArticleUpdateRequest;
 import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class ArticleApiTest {
@@ -97,6 +94,33 @@ public class ArticleApiTest {
                 .body(ArticleResponse.class);
 
         System.out.println("response = " + response);
+    }
+
+    @Test
+    void addDummyDataTest() {
+        ArticleCreateRequest[] data = {
+                new ArticleCreateRequest(
+                        "hello", "world",
+                        Set.of(93223085430833152L, 93223086101921792L),
+                        93220295450034176L
+                ),
+                new ArticleCreateRequest(
+                        "hello2", "world2",
+                        Set.of(93223086324219904L, 93223086538129408L),
+                        93220296737685504L
+                ),
+        };
+        for (int i = 0; i < 100; i++) {
+            ArticleResponse response = restClient.post()
+                    .uri("v1/articles")
+                    .body(new ArticleCreateRequest(
+                            "hello" + (i + 1), "world2" + (i + 1),
+                            Set.of(93223086324219904L, 93223086538129408L),
+                            93220296737685504L
+                    ))
+                    .retrieve()
+                    .body(ArticleResponse.class);
+        }
     }
 
     @Test

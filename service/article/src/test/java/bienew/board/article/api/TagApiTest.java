@@ -3,9 +3,7 @@ package bienew.board.article.api;
 import bienew.board.article.service.request.TagCreateRequest;
 import bienew.board.article.service.request.TagUpdateRequest;
 import bienew.board.article.service.response.TagResponse;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
 

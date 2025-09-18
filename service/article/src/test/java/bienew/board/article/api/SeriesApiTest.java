@@ -35,7 +35,8 @@ public class SeriesApiTest {
         List<SeriesResponse> list = restClient.get()
                 .uri("/v1/series")
                 .retrieve()
-                .body(new ParameterizedTypeReference<List<SeriesResponse>>() {});
+                .body(new ParameterizedTypeReference<List<SeriesResponse>>() {
+                });
 
         list.forEach(System.out::println);
     }

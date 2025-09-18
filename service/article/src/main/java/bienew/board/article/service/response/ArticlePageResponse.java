@@ -8,5 +8,7 @@ public record ArticlePageResponse(
 ) {
     public static ArticlePageResponse of(List<ArticleResponse> data, Long cnt) {
         return new ArticlePageResponse(data, cnt);
-    };
+    }
+
+    ;
 }

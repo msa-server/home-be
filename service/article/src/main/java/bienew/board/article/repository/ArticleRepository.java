@@ -11,26 +11,22 @@ import java.util.List;
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query(
-            value = "select article.article_id, article.title, article.content," +
-                    " article.created_at, article.modified_at, article.series_id " +
-                    "from (" +
-                    "   select article_id from article_tag" +
-                    "   where tag_id = :tagId" +
-                    "   order by article_id desc" +
-                    "   limit :limit offset :offset" +
-                    ") t left join article on t.article_id = article.article_id",
+            value = "select article_id, title, content," +
+                    " created_at, modified_at, series_id " +
+                    "from article" +
+                    "order by article_id desc" +
+                    "limit :limit offset :offset",
+//            value = "select article.article_id, article.title, article.content," +
+//                    " article.created_at, article.modified_at, article.series_id " +
+//                    "from article(" +
+//                    "   select article_id from article_tag" +
+//                    "   where tag_id = :tagId" +
+//                    "   order by article_id desc" +
+//                    "   limit :limit offset :offset" +
+//                    ") t left join article on t.article_id = article.article_id",
             nativeQuery = true
     )
     List<Article> findAll(
-            @Param("tagId") Long tagId,
             @Param("offset") Long offset,
             @Param("limit") Long limit);
-
-    @Query(
-            value = "select count(*) from (" +
-                    "select article_id from article_tag where tag_id = :tagId limit :limit" +
-                    ") t",
-            nativeQuery = true
-    )
-    Long count(@Param("tagId") Long tagId, @Param("limit") Long limit);
 }

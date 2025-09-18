@@ -10,17 +10,14 @@ import bienew.board.article.repository.SeriesRepository;
 import bienew.board.article.repository.TagRepository;
 import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.request.ArticleUpdateRequest;
-import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
 import bienew.board.article.service.response.SeriesResponse;
 import bienew.board.article.service.response.TagResponse;
 import bienew.common.snowflake.Snowflake;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,15 +76,12 @@ public class ArticleService {
      * 해당 태그를 포함하는 게시글 조회.
      */
     @Transactional
-    public ArticlePageResponse readAll(Long tagId, Long page, Long pageSize) {
-        return ArticlePageResponse.of(
-                articleRepository.findAll(tagId, (page - 1) * pageSize, pageSize).stream()
-                        .map(article -> ArticleResponse.from(
-                                article,
-                                article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
-                                SeriesResponse.from(article.getSeries()))).toList(),
-                tagRepository.findById(tagId).orElseThrow().getCount()
-        );
+    public List<ArticleResponse> readAll(Long page, Long pageSize) {
+        return articleRepository.findAll((page - 1) * pageSize, pageSize).stream()
+                .map(article -> ArticleResponse.from(
+                        article,
+                        article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
+                        SeriesResponse.from(article.getSeries()))).toList();
     }
 
     @Transactional
@@ -150,5 +144,9 @@ public class ArticleService {
 
             article.getArticleTags().add(ArticleTag.create(article, tag));
         }
+    }
+
+    public Long getTotalArticleCount() {
+        return articleRepository.count();
     }
 }

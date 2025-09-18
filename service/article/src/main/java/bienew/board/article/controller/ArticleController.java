@@ -4,10 +4,11 @@ package bienew.board.article.controller;
 import bienew.board.article.service.ArticleService;
 import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.request.ArticleUpdateRequest;
-import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,17 +16,21 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @GetMapping("/v1/articles/{articleId}")
-    public ArticleResponse read(@PathVariable Long articleId){
+    public ArticleResponse read(@PathVariable Long articleId) {
         return articleService.read(articleId);
     }
 
     @GetMapping("/v1/articles")
-    public ArticlePageResponse readAll(
-            @RequestParam("tagId") Long tagId,
+    public List<ArticleResponse> readAll(
             @RequestParam("page") Long page,
             @RequestParam("pageSize") Long pageSize
     ) {
-        return articleService.readAll(tagId, page, pageSize);
+        return articleService.readAll(page, pageSize);
+    }
+
+    @GetMapping("/v1/articles/count")
+    public Long readAllArticleCount() {
+        return articleService.getTotalArticleCount();
     }
 
     @PostMapping("/v1/articles")
