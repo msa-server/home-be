@@ -13,8 +13,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query(
             value = "select article_id, title, content," +
                     " created_at, modified_at, series_id " +
-                    "from article" +
-                    "order by article_id desc" +
+                    "from article " +
+                    "order by article_id desc " +
                     "limit :limit offset :offset",
 //            value = "select article.article_id, article.title, article.content," +
 //                    " article.created_at, article.modified_at, article.series_id " +
