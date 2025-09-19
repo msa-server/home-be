@@ -53,10 +53,7 @@ public class ArticleService {
                 .orElseThrow();
         series.addArticle(article);
 
-        return ArticleResponse.from(
-                article,
-                article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
-                SeriesResponse.from(article.getSeries()));
+        return ArticleResponse.from(article);
     }
 
     /**
@@ -66,22 +63,16 @@ public class ArticleService {
     public ArticleResponse read(Long articleId) {
         Article article = articleRepository.findById(articleId).orElseThrow();
 
-        return ArticleResponse.from(
-                article,
-                article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
-                SeriesResponse.from(article.getSeries()));
+        return ArticleResponse.from(article);
     }
 
     /**
-     * 해당 태그를 포함하는 게시글 조회.
+     * 특정 페이지 게시글 목록 조회.
      */
     @Transactional
     public List<ArticleResponse> readAll(Long page, Long pageSize) {
-        return articleRepository.findAll((page - 1) * pageSize, pageSize).stream()
-                .map(article -> ArticleResponse.from(
-                        article,
-                        article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
-                        SeriesResponse.from(article.getSeries()))).toList();
+        return articleRepository.getPagedArticles((page - 1) * pageSize, pageSize).stream()
+                .map(ArticleResponse::from).toList();
     }
 
     @Transactional
@@ -123,10 +114,7 @@ public class ArticleService {
         Series series = seriesRepository.findById(request.seriesId()).orElseThrow();
         series.addArticle(article);
 
-        return ArticleResponse.from(
-                article,
-                article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
-                SeriesResponse.from(article.getSeries()));
+        return ArticleResponse.from(article);
     }
 
     /**

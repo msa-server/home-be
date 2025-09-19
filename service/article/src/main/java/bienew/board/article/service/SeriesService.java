@@ -1,10 +1,14 @@
 package bienew.board.article.service;
 
+import bienew.board.article.entity.Article;
 import bienew.board.article.entity.Series;
+import bienew.board.article.repository.ArticleRepository;
 import bienew.board.article.repository.SeriesRepository;
 import bienew.board.article.service.request.SeriesCreateRequest;
 import bienew.board.article.service.request.SeriesUpdateRequest;
+import bienew.board.article.service.response.ArticleResponse;
 import bienew.board.article.service.response.SeriesResponse;
+import bienew.board.article.service.response.TagResponse;
 import bienew.common.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SeriesService {
     private final SeriesRepository seriesRepository;
+    private final ArticleRepository articleRepository;
     private final Snowflake snowflake = new Snowflake();
 
     @Transactional
@@ -55,5 +60,20 @@ public class SeriesService {
         series.update(request.seriesName());
 
         return SeriesResponse.from(seriesRepository.save(series));
+    }
+
+    @Transactional
+    public List<ArticleResponse> readArticles(Long seriesId, Long page, Long pageSize) {
+        List<Article> results = articleRepository.getPagedArticlesBySeriesId(
+                seriesId, (page - 1) * pageSize, pageSize);
+
+        return results.stream().map(ArticleResponse::from).toList();
+
+//        return articleRepository.getPagedArticlesBySeriesId(seriesId, (page - 1) * pageSize, pageSize)
+//                .stream().map(article -> ArticleResponse.from(
+//                        article,
+//                        article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
+//                        SeriesResponse.from(article.getSeries())
+//                )).toList();
     }
 }

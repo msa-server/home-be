@@ -15,15 +15,15 @@ public record ArticleResponse(
         SeriesResponse series
 ) {
 
-    public static ArticleResponse from(Article article, List<TagResponse> tags, SeriesResponse series) {
+    public static ArticleResponse from(Article article) {
         return new ArticleResponse(
                 article.getArticleId(),
                 article.getTitle(),
                 article.getContent(),
-                tags,
+                article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
                 article.getCreatedAt(),
                 article.getModifiedAt(),
-                series
+                SeriesResponse.from(article.getSeries())
         );
     }
 }
