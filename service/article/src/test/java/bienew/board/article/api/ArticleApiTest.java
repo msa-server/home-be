@@ -2,7 +2,6 @@ package bienew.board.article.api;
 
 import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.request.ArticleUpdateRequest;
-import bienew.board.article.service.response.ArticlePageResponse;
 import bienew.board.article.service.response.ArticleResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
