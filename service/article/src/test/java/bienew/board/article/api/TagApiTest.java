@@ -2,6 +2,7 @@ package bienew.board.article.api;
 
 import bienew.board.article.service.request.TagCreateRequest;
 import bienew.board.article.service.request.TagUpdateRequest;
+import bienew.board.article.service.response.ArticleResponse;
 import bienew.board.article.service.response.TagResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
@@ -50,5 +51,15 @@ public class TagApiTest {
                 .body(TagResponse.class);
 
         System.out.println("response : " + response);
+    }
+
+    @Test
+    void readTagArticleListTest() {
+        List<ArticleResponse> responses = restClient.get()
+                .uri("/v1/tags/{tagId}?page=1&pageSize=12", 93223086324219904L)
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<ArticleResponse>>() {});
+
+        responses.forEach(System.out::println);
     }
 }

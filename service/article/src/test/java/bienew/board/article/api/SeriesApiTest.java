@@ -2,6 +2,7 @@ package bienew.board.article.api;
 
 import bienew.board.article.service.request.SeriesCreateRequest;
 import bienew.board.article.service.request.SeriesUpdateRequest;
+import bienew.board.article.service.response.ArticleResponse;
 import bienew.board.article.service.response.SeriesResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
@@ -50,6 +51,16 @@ public class SeriesApiTest {
                 .body(SeriesResponse.class);
 
         System.out.println("response =" + response);
+    }
+
+    @Test
+    void readSeriesArticleListTest() {
+        List<ArticleResponse> responses = restClient.get()
+                .uri("/v1/series/{seriesId}?page=1&pageSize=12", 93220296737685504L)
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<ArticleResponse>>() {});
+
+        responses.forEach(System.out::println);
     }
 
 }
