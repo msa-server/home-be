@@ -10,6 +10,7 @@ import bienew.board.article.repository.SeriesRepository;
 import bienew.board.article.repository.TagRepository;
 import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.request.ArticleUpdateRequest;
+import bienew.board.article.service.response.ArticleCountResponse;
 import bienew.board.article.service.response.ArticleResponse;
 import bienew.board.article.service.response.SeriesResponse;
 import bienew.board.article.service.response.TagResponse;
@@ -134,7 +135,7 @@ public class ArticleService {
         }
     }
 
-    public Long getTotalArticleCount() {
-        return articleRepository.count();
+    public ArticleCountResponse getTotalArticleCount() {
+        return ArticleCountResponse.from(articleRepository.count());
     }
 }

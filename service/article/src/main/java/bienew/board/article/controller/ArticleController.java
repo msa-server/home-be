@@ -4,6 +4,7 @@ package bienew.board.article.controller;
 import bienew.board.article.service.ArticleService;
 import bienew.board.article.service.request.ArticleCreateRequest;
 import bienew.board.article.service.request.ArticleUpdateRequest;
+import bienew.board.article.service.response.ArticleCountResponse;
 import bienew.board.article.service.response.ArticleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class ArticleController {
     }
 
     @GetMapping("/v1/articles/count")
-    public Long readAllArticleCount() {
+    public ArticleCountResponse readAllArticleCount() {
         return articleService.getTotalArticleCount();
     }
 
