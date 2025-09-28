@@ -67,4 +67,10 @@ public class TagService {
                 tagId, (page - 1) * pageSize, pageSize)
                 .stream().map(ArticleResponse::from).toList();
     }
+
+    public TagResponse readTag(Long tagId) {
+        return TagResponse.from(
+                tagRepository.findById(tagId).orElseThrow()
+        );
+    }
 }

@@ -26,6 +26,11 @@ public class SeriesController {
     }
 
     @GetMapping("/v1/series/{seriesId}")
+    public SeriesResponse readSeries(@PathVariable Long seriesId) {
+        return seriesService.readSeries(seriesId);
+    }
+
+    @GetMapping("/v1/series/{seriesId}/articles")
     public List<ArticleResponse> readArticles(
             @PathVariable Long seriesId,
             @RequestParam("page") Long page,

@@ -26,6 +26,12 @@ public class TagController {
     }
 
     @GetMapping("/v1/tags/{tagId}")
+    public TagResponse readTag(@PathVariable Long tagId) {
+        return tagService.readTag(tagId);
+    }
+
+
+    @GetMapping("/v1/tags/{tagId}/articles")
     public List<ArticleResponse> readArticles(
             @PathVariable Long tagId,
             @RequestParam("page") Long page,

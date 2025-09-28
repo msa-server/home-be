@@ -56,11 +56,21 @@ public class SeriesApiTest {
     @Test
     void readSeriesArticleListTest() {
         List<ArticleResponse> responses = restClient.get()
-                .uri("/v1/series/{seriesId}?page=1&pageSize=12", 93220296737685504L)
+                .uri("/v1/series/{seriesId}/articles?page=1&pageSize=12", 93220296737685504L)
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<ArticleResponse>>() {});
 
         responses.forEach(System.out::println);
+    }
+
+    @Test
+    void readSeriesByIdTest() {
+        SeriesResponse response = restClient.get()
+                .uri("/v1/series/{seriesId}", 93220296737685504L)
+                .retrieve()
+                .body(SeriesResponse.class);
+
+        System.out.println("res = " + response);
     }
 
 }

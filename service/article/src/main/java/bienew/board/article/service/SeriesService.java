@@ -68,12 +68,11 @@ public class SeriesService {
                 seriesId, (page - 1) * pageSize, pageSize);
 
         return results.stream().map(ArticleResponse::from).toList();
+    }
 
-//        return articleRepository.getPagedArticlesBySeriesId(seriesId, (page - 1) * pageSize, pageSize)
-//                .stream().map(article -> ArticleResponse.from(
-//                        article,
-//                        article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
-//                        SeriesResponse.from(article.getSeries())
-//                )).toList();
+    public SeriesResponse readSeries(Long seriesId) {
+        return SeriesResponse.from(
+                seriesRepository.findById(seriesId).orElseThrow()
+        );
     }
 }
