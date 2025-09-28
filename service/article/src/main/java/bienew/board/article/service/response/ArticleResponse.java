@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record ArticleResponse(
-        Long articleId,
+        String articleId,
         String title,
         String content,
         List<TagResponse> articleTags,
@@ -17,7 +17,7 @@ public record ArticleResponse(
 
     public static ArticleResponse from(Article article) {
         return new ArticleResponse(
-                article.getArticleId(),
+                String.valueOf(article.getArticleId()),
                 article.getTitle(),
                 article.getContent(),
                 article.getArticleTags().stream().map(at -> TagResponse.from(at.getTag())).toList(),
