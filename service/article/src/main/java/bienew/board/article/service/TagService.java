@@ -1,9 +1,11 @@
 package bienew.board.article.service;
 
 import bienew.board.article.entity.Tag;
+import bienew.board.article.repository.ArticleRepository;
 import bienew.board.article.repository.TagRepository;
 import bienew.board.article.service.request.TagCreateRequest;
 import bienew.board.article.service.request.TagUpdateRequest;
+import bienew.board.article.service.response.ArticleResponse;
 import bienew.board.article.service.response.TagResponse;
 import bienew.common.snowflake.Snowflake;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TagService {
     private final TagRepository tagRepository;
+    private final ArticleRepository articleRepository;
+
     private final Snowflake snowflake = new Snowflake();
 
     @Transactional
@@ -55,5 +59,18 @@ public class TagService {
         tag.update(request.tagName());
 
         return TagResponse.from(tagRepository.save(tag));
+    }
+
+    @Transactional
+    public List<ArticleResponse> readArticles(Long tagId, Long page, Long pageSize) {
+        return articleRepository.getPagedArticlesByTagId(
+                tagId, (page - 1) * pageSize, pageSize)
+                .stream().map(ArticleResponse::from).toList();
+    }
+
+    public TagResponse readTag(Long tagId) {
+        return TagResponse.from(
+                tagRepository.findById(tagId).orElseThrow()
+        );
     }
 }

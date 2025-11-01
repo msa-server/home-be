@@ -1,14 +1,14 @@
 package bienew.board.article.entity;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Table(name = "tag")
 @Entity
@@ -22,8 +22,7 @@ public class Tag {
     @Column(unique = true, nullable = false)
     private String tagName;
 
-    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ArticleTag> articleTags = new ArrayList<>();
+    private Long count = 0L;
 
     public static Tag create(Long id, String tagName) {
         Tag tag = new Tag();
@@ -32,6 +31,14 @@ public class Tag {
         tag.tagName = tagName;
 
         return tag;
+    }
+
+    public void increase() {
+        count += 1;
+    }
+
+    public void decrease() {
+        count -= 1;
     }
 
     public void update(String tagName) {

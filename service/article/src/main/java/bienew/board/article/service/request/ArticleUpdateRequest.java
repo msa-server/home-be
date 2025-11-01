@@ -2,10 +2,12 @@ package bienew.board.article.service.request;
 
 import jakarta.validation.constraints.NotNull;
 
-import java.util.List;
+import java.util.Set;
 
 public record ArticleUpdateRequest(
         @NotNull String title,
         @NotNull String content,
-        @NotNull List<Long> tagIds
-) { }
+        @NotNull Set<Long> tagIds,
+        @NotNull Long seriesId
+) {
+}
