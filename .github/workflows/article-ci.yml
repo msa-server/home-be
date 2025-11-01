@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "service/article"
+      - "main"
 
 jobs:
   build-and-push:
@@ -24,7 +25,7 @@ jobs:
       - uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/service-article
+          images: ${{ secrets.DOCKER_USERNAME }}/service-article
           tags: |
             type=ref,event=branch
             type=sha,prefix=sha-

@@ -1,0 +1,38 @@
+package bienew.board.article.entity;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(
+        name = "article_tag",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"article_id", "tag_id"})
+)
+@Getter
+@EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ArticleTag {
+    @Id
+    @GeneratedValue
+    private Long articleTagId;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "article_id", nullable = false)
+    private Article article;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "tag_id", nullable = false)
+    private Tag tag;
+
+    public static ArticleTag create(Article article, Tag tag) {
+        ArticleTag articleTag = new ArticleTag();
+
+        articleTag.article = article;
+        articleTag.tag = tag;
+
+        return articleTag;
+    }
+}
